@@ -73,7 +73,7 @@ int main(int argc, char* argv[])
 	int controlMode = CONTROL_MODE_VELOCITY;
 	int jointIndex = 0;  // 0 for cart and 1 for pole
 	struct b3JointInfo info;
-	double targetVelocity = 0.0;
+	double targetVelocity = 2.0;
 	double kd = 1.0;
 	double force = 100000.0;
 	b3SharedMemoryCommandHandle commandHandle = b3JointControlCommandInit2(sm, bodyUniqueId, controlMode);
@@ -92,6 +92,9 @@ int main(int argc, char* argv[])
 			sm, b3InitStepSimulationCommand(sm));
 		statusType = b3GetStatusType(statusHandle);
 	}
+
+	// Show current state before applying action
+	getJointState(sm, bodyUniqueId);
 
 	return 0;
 }
