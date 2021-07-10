@@ -33,5 +33,21 @@ int main(int argc, char* argv[])
 	int bodyUniqueId = b3GetStatusBodyIndex(statusHandle);
 	printf("The bodyUniqueID is %d\n", bodyUniqueId);
 
+	// Apply dummy torque
+	int controlMode = CONTROL_MODE_VELOCITY;
+	int jointIndex = 0;  // 0 for cart and 1 for pole
+	struct b3JointInfo info;
+	double targetVelocity = 0.0;
+	double kd = 1.0;
+	double force = 100000.0;
+	b3SharedMemoryCommandHandle commandHandle = b3JointControlCommandInit2(sm, bodyUniqueId, controlMode);
+	b3GetJointInfo(sm, bodyUniqueId, jointIndex, &info);
+
+	b3JointControlSetDesiredVelocity(commandHandle, info.m_uIndex, targetVelocity);
+	b3JointControlSetKd(commandHandle, info.m_uIndex, kd);
+	b3JointControlSetMaximumForce(commandHandle, info.m_uIndex, force);
+	statusHandle = b3SubmitClientCommandAndWaitStatus(sm, commandHandle);
+	printf("Current status is %d\n", int(statusHandle->unused));
+
 	return 0;
 }
