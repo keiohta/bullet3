@@ -49,5 +49,13 @@ int main(int argc, char* argv[])
 	statusHandle = b3SubmitClientCommandAndWaitStatus(sm, commandHandle);
 	printf("Current status is %d\n", int(statusHandle->unused));
 
+	// Step simulation
+	if (b3CanSubmitCommand(sm))
+	{
+		statusHandle = b3SubmitClientCommandAndWaitStatus(
+			sm, b3InitStepSimulationCommand(sm));
+		statusType = b3GetStatusType(statusHandle);
+	}
+
 	return 0;
 }
