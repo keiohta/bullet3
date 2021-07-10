@@ -2,11 +2,44 @@
 // Created by ohta on 2021/07/10.
 //
 
-#include <stdio.h>
+#include <iostream>
 
 #include "../SharedMemory/SharedMemoryPublic.h"
 #include "../SharedMemory/PhysicsClientC_API.h"
-#include "../SharedMemory/PhysicsDirectC_API.h"
+
+void getJointState(b3PhysicsClientHandle& sm, int bodyUniqueId)
+{
+	struct b3JointSensorState sensorState;
+
+	// Display current state before applying action
+	b3SharedMemoryCommandHandle cmd_handle = b3RequestActualStateCommandInit(sm, bodyUniqueId);
+	b3SharedMemoryStatusHandle status_handle = b3SubmitClientCommandAndWaitStatus(sm, cmd_handle);
+	int status_type = b3GetStatusType(status_handle);
+	if (status_type != CMD_ACTUAL_STATE_UPDATE_COMPLETED)
+	{
+		std::cout << "getJointState failed.\n"
+				  << std::endl;
+		return;
+	}
+	cmd_handle = b3RequestActualStateCommandInit(sm, bodyUniqueId);
+	status_handle = b3SubmitClientCommandAndWaitStatus(sm, cmd_handle);
+	status_type = b3GetStatusType(status_handle);
+	if (status_type != CMD_ACTUAL_STATE_UPDATE_COMPLETED)
+	{
+		std::cout << "getJointState failed." << std::endl;
+		return;
+	}
+	int jointIndex = 0;
+	if (b3GetJointState(sm, status_handle, jointIndex, &sensorState))
+	{
+		std::cout << "Joint position " << sensorState.m_jointPosition;
+		std::cout << " velocity " << sensorState.m_jointVelocity << std::endl;
+	}
+	else
+	{
+		std::cout << "getJointState failed (2)." << std::endl;
+	}
+}
 
 int main(int argc, char* argv[])
 {
@@ -31,7 +64,10 @@ int main(int argc, char* argv[])
 		return -1;
 	}
 	int bodyUniqueId = b3GetStatusBodyIndex(statusHandle);
-	printf("The bodyUniqueID is %d\n", bodyUniqueId);
+	std::cout << "The bodyUniqueID is " << bodyUniqueId << std::endl;
+
+	// Show current state before applying action
+	getJointState(sm, bodyUniqueId);
 
 	// Apply dummy torque
 	int controlMode = CONTROL_MODE_VELOCITY;
