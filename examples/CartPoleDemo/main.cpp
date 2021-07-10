@@ -6,14 +6,15 @@
 
 #include "../SharedMemory/SharedMemoryPublic.h"
 #include "../SharedMemory/PhysicsClientC_API.h"
-#include "../SharedMemory/PhysicsDirect.h"
+#include "../SharedMemory/PhysicsDirectC_API.h"
 
 int main(int argc, char* argv[])
 {
     int method = eCONNECT_DIRECT;
 	printf("method = %d\n", method);
 
-	b3PhysicsClientHandle sm = b3ConnectPhysicsDirect();
+	b3PhysicsClientHandle sm;
+	sm = b3ConnectPhysicsDirect();
 
 	return 0;
 }
