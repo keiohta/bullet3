@@ -2,7 +2,9 @@
 /build3/gmake
 /build3/vs2010
 /build_cmake/
-
+cmake-build-debug/*
+.idea/*
+**/cmake-build-debug/**
 *.pyc
 
 # Python
