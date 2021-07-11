@@ -7,7 +7,7 @@
 #include "../SharedMemory/SharedMemoryPublic.h"
 #include "../SharedMemory/PhysicsClientC_API.h"
 
-void getJointState(b3PhysicsClientHandle& sm, int bodyUniqueId)
+void showJointState(b3PhysicsClientHandle& sm, int bodyUniqueId)
 {
 	struct b3JointSensorState sensorState;
 
@@ -41,20 +41,13 @@ void getJointState(b3PhysicsClientHandle& sm, int bodyUniqueId)
 	}
 }
 
-int main(int argc, char* argv[])
+int loadURDFModel(b3PhysicsClientHandle& sm, const char* urdfFileName)
 {
-	int method = eCONNECT_DIRECT;
-	printf("method = %d\n", method);
-
-	// Directly connect to physics engine
-	b3PhysicsClientHandle sm = b3ConnectPhysicsDirect();
-
-	// Load CartPole URDF model
-	int flags = 0;
-	const char* urdfFileName = "../../build_cmake/examples/pybullet/pybullet_data/cartpole.urdf";
+    int flags = 0;
+//	const char* urdfFileName = "../../build_cmake/examples/pybullet/pybullet_data/cartpole.urdf";
 	b3SharedMemoryCommandHandle command = b3LoadUrdfCommandInit(sm, urdfFileName);
 	b3LoadUrdfCommandSetFlags(command, flags);
-	printf("Loading %s...\n", urdfFileName);
+	std::cout << "Loading " << urdfFileName << "..." << std::endl;
 	b3SharedMemoryStatusHandle statusHandle = b3SubmitClientCommandAndWaitStatus(sm, command);
 	int statusType = b3GetStatusType(statusHandle);
 	if (statusType != CMD_URDF_LOADING_COMPLETED)
@@ -64,7 +57,20 @@ int main(int argc, char* argv[])
 		return -1;
 	}
 	int bodyUniqueId = b3GetStatusBodyIndex(statusHandle);
-	std::cout << "The bodyUniqueID is " << bodyUniqueId << std::endl;
+	return bodyUniqueId;
+}
+
+int main(int argc, char* argv[])
+{
+	int method = eCONNECT_DIRECT;
+	printf("method = %d\n", method);
+
+	// Directly connect to physics engine
+	b3PhysicsClientHandle sm = b3ConnectPhysicsDirect();
+
+	// Load CartPole URDF model
+    const char* urdfFileName = "../../build_cmake/examples/pybullet/pybullet_data/cartpole.urdf";
+    int bodyUniqueId = loadURDFModel(sm, urdfFileName);
 
 	// Show current state before applying action
 	getJointState(sm, bodyUniqueId);
@@ -82,7 +88,7 @@ int main(int argc, char* argv[])
 	b3JointControlSetDesiredVelocity(commandHandle, info.m_uIndex, targetVelocity);
 	b3JointControlSetKd(commandHandle, info.m_uIndex, kd);
 	b3JointControlSetMaximumForce(commandHandle, info.m_uIndex, force);
-	statusHandle = b3SubmitClientCommandAndWaitStatus(sm, commandHandle);
+	b3SharedMemoryStatusHandle statusHandle = b3SubmitClientCommandAndWaitStatus(sm, commandHandle);
 	printf("Current status is %d\n", int(statusHandle->unused));
 
 	// Step simulation
@@ -90,7 +96,7 @@ int main(int argc, char* argv[])
 	{
 		statusHandle = b3SubmitClientCommandAndWaitStatus(
 			sm, b3InitStepSimulationCommand(sm));
-		statusType = b3GetStatusType(statusHandle);
+		int statusType = b3GetStatusType(statusHandle);
 	}
 
 	// Show current state before applying action
