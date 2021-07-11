@@ -1,12 +1,18 @@
+cmake_minimum_required(VERSION 3.10)
+
+project(CartPoleDemo)
+
 include_directories(
-        ../src)
+        ${CMAKE_SOURCE_DIR}/../../src)
 
 link_directories(
-        ../../build_cmake/Extras/BulletRobotics)
-
-link_libraries(
-        BulletDynamics)
-
+        ${CMAKE_SOURCE_DIR}/../../build_cmake/Extras/BulletRobotics
+)
 add_executable(
-        CartPoleDemo
-        main.cpp)
+        ${PROJECT_NAME}
+        main.cpp
+)
+target_link_libraries(
+        ${PROJECT_NAME}
+        BulletRobotics
+)
