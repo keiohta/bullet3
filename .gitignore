@@ -4,7 +4,7 @@
 /build_cmake/
 cmake-build-debug/*
 .idea/*
-
+**/cmake-build-debug/**
 *.pyc
 
 # Python
