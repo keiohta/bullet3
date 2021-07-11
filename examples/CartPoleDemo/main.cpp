@@ -69,11 +69,11 @@ int main(int argc, char* argv[])
 	b3PhysicsClientHandle sm = b3ConnectPhysicsDirect();
 
 	// Load CartPole URDF model
-    const char* urdfFileName = "../../build_cmake/examples/pybullet/pybullet_data/cartpole.urdf";
+    const char* urdfFileName = "../../../build_cmake/examples/pybullet/pybullet_data/cartpole.urdf";
     int bodyUniqueId = loadURDFModel(sm, urdfFileName);
 
 	// Show current state before applying action
-	getJointState(sm, bodyUniqueId);
+	showJointState(sm, bodyUniqueId);
 
 	// Apply dummy torque
 	int controlMode = CONTROL_MODE_VELOCITY;
@@ -100,7 +100,7 @@ int main(int argc, char* argv[])
 	}
 
 	// Show current state before applying action
-	getJointState(sm, bodyUniqueId);
+	showJointState(sm, bodyUniqueId);
 
 	return 0;
 }
