@@ -5,7 +5,7 @@
 #include <iostream>
 
 #include "../SharedMemory/SharedMemoryPublic.h"
-#include "../SharedMemory/PhysicsClientC_API.h"
+#include "../SharedMemory/PhysicsDirectC_API.h"
 
 void showJointState(b3PhysicsClientHandle& sm, int bodyUniqueId)
 {
@@ -94,8 +94,9 @@ int main(int argc, char* argv[])
 	// Step simulation
 	if (b3CanSubmitCommand(sm))
 	{
+	    commandHandle = b3InitStepSimulationCommand(sm);
 		statusHandle = b3SubmitClientCommandAndWaitStatus(
-			sm, b3InitStepSimulationCommand(sm));
+			sm, commandHandle);
 		int statusType = b3GetStatusType(statusHandle);
 	}
 
